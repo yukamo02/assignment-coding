@@ -1,0 +1,9 @@
+@font-face {
+    font-family: '';
+    src: url('Futehodo-MaruGothic.woff2') format('woff2'),
+        url('Futehodo-MaruGothic.woff') format('woff');
+    font-weight: 900;
+    font-style: normal;
+    font-display: swap;
+}
+

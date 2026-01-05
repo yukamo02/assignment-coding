@@ -1,0 +1,9 @@
+@font-face {
+    font-family: '';
+    src: url('Honoka-Shin-Maru-Gothic_R.woff2') format('woff2'),
+        url('Honoka-Shin-Maru-Gothic_R.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
