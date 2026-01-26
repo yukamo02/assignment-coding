@@ -52,7 +52,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 /* =========================
-   KV：PC〜Tablet（736px以上）
+   KV：PC〜Tablet（768px以上）
 ========================= */
 function initKVAnimationPC() {
   const kv = document.querySelector('.key-visual');
@@ -329,5 +329,6 @@ const observer = new IntersectionObserver(entries => {
 }, { threshold: 0.35 });
 
 observer.observe(document.querySelector('.message'));
+
 
 
