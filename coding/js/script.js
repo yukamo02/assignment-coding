@@ -32,7 +32,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 document.addEventListener('DOMContentLoaded', () => {
-  const mqSP = window.matchMedia('(max-width: 7675px)');
+  const mqSP = window.matchMedia('(max-width: 767px)');
   
   const mqPC = window.matchMedia('(min-width: 768px)');
 
@@ -329,4 +329,5 @@ const observer = new IntersectionObserver(entries => {
 }, { threshold: 0.35 });
 
 observer.observe(document.querySelector('.message'));
+
 
