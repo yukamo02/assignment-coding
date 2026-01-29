@@ -4,50 +4,32 @@
 window.addEventListener('load', () => {
   initKV();
   initBusinessSlider();
+  initHamburger();
+  initMessageObserver();
 });
+
 
 /* =========================
    KV 共通初期化
 ========================= */
 function initKV() {
-  const mqSP = window.matchMedia('(max-width: 767px)');
   const kv = document.querySelector('.key-visual');
   if (!kv || kv.dataset.kvInit) return;
 
+  const mqSP = window.matchMedia('(max-width: 767px)');
+
   if (mqSP.matches) {
-    initKVAnimationSP();
+    initKVAnimationSP(kv);
   } else {
-    initKVAnimationPC();
+    initKVAnimationPC(kv);
   }
 }
 
-/* =========================
-   hamburger menu
-========================= */
-document.addEventListener('DOMContentLoaded', () => {
-  const hamburger = document.getElementById('hamburger-btn');
-  const menu = document.getElementById('menuModal');
-  if (!hamburger || !menu) return;
-
-  hamburger.addEventListener('click', () => {
-    menu.classList.toggle('active');
-    hamburger.classList.toggle('active');
-  });
-
-  document.querySelectorAll('.mobile-nav a').forEach(link => {
-    link.addEventListener('click', () => {
-      menu.classList.remove('active');
-      hamburger.classList.remove('active');
-    });
-  });
-});
 
 /* =========================
-   KV：PC（768px以上）
+   KV：PC
 ========================= */
-function initKVAnimationPC() {
-  const kv = document.querySelector('.key-visual');
-  if (!kv || kv.dataset.kvInit) return;
+function initKVAnimationPC(kv) {
   kv.dataset.kvInit = 'pc';
 
   const orange = kv.querySelector('.orange-el');
@@ -80,12 +62,11 @@ function initKVAnimationPC() {
   }, 14800);
 }
 
+
 /* =========================
-   KV：SP（767px以下）
+   KV：SP
 ========================= */
-function initKVAnimationSP() {
-  const kv = document.querySelector('.key-visual');
-  if (!kv || kv.dataset.kvInit) return;
+function initKVAnimationSP(kv) {
   kv.dataset.kvInit = 'sp';
 
   const orange = kv.querySelector('.orange-el');
@@ -119,12 +100,35 @@ function initKVAnimationSP() {
 }
 
 /* =========================
+   hamburger menu
+========================= */
+function initHamburger() {
+  const hamburger = document.getElementById('hamburger-btn');
+  const menu = document.getElementById('menuModal');
+  if (!hamburger || !menu) return;
+
+  hamburger.addEventListener('click', () => {
+    menu.classList.toggle('active');
+    hamburger.classList.toggle('active');
+  });
+
+  document.querySelectorAll('.mobile-nav a').forEach(link => {
+    link.addEventListener('click', () => {
+      menu.classList.remove('active');
+      hamburger.classList.remove('active');
+    });
+  });
+}
+
+
+/* =========================
    Business Slider
 ========================= */
 function initBusinessSlider() {
   const track = document.querySelector('.business-slider-wrapper');
   const viewport = document.querySelector('.slider-viewport');
   if (!track || !viewport || track.dataset.sliderInit) return;
+
   track.dataset.sliderInit = 'true';
 
   const slides = Array.from(track.children);
@@ -197,11 +201,100 @@ function initBusinessSlider() {
   window.addEventListener('resize', () => move(false));
 }
 
+
+/* =========================
+   Team Slider（SPのみ）
+========================= */
+window.addEventListener('load', () => {
+  const slider = document.querySelector('.member-slider');
+  const list = document.querySelector('.member-list');
+  if (!slider || !list) return;
+
+  /* =========================
+     元カード取得＆並び替え
+  ========================= */
+  let baseItems = Array.from(list.children);
+
+  // 意図した並び替え（3番目と4番目）
+  if (baseItems.length >= 4) {
+    [baseItems[2], baseItems[3]] = [baseItems[3], baseItems[2]];
+  }
+
+  list.innerHTML = '';
+  baseItems.forEach(item => list.appendChild(item));
+
+  /* =========================
+     無限用複製（ここが重要）
+  ========================= */
+
+  // 右側用（順方向）
+  baseItems.forEach(item =>
+    list.appendChild(item.cloneNode(true))
+  );
+
+  // 左側用（逆順）
+  [...baseItems].reverse().forEach(item =>
+    list.insertBefore(item.cloneNode(true), list.firstChild)
+  );
+
+  const items = Array.from(list.children);
+  const baseLength = baseItems.length;
+
+  // 本物の1枚目が中央
+  let index = baseLength;
+
+  function setPosition(animate = true) {
+    const card = items[index];
+    if (!card) return;
+
+    const cardRect = card.getBoundingClientRect();
+    const sliderRect = slider.getBoundingClientRect();
+
+    const cardCenter = cardRect.left + cardRect.width / 2;
+    const sliderCenter = sliderRect.left + sliderRect.width / 2;
+
+    const currentX =
+      new DOMMatrixReadOnly(getComputedStyle(list).transform).m41;
+
+    const x = sliderCenter - cardCenter + currentX;
+
+    list.style.transition = animate ? 'transform 0.6s ease' : 'none';
+    list.style.transform = `translateX(${x}px)`;
+  }
+
+  function slide() {
+    index++;
+    setPosition(true);
+
+    // 右端を超えたら同じ並び位置へ戻す
+    if (index >= baseLength * 2) {
+      setTimeout(() => {
+        index -= baseLength;
+        setPosition(false);
+      }, 600);
+    }
+  }
+
+  let timer = setInterval(slide, 2500);
+
+  // ホバー / タップで停止
+  slider.addEventListener('mouseenter', () => clearInterval(timer));
+  slider.addEventListener('mouseleave', () => {
+    timer = setInterval(slide, 2500);
+  });
+
+  setPosition(false);
+  window.addEventListener('resize', () => setPosition(false));
+});
+
+
 /* =========================
    Intersection Observer
 ========================= */
-const message = document.querySelector('.message');
-if (message) {
+function initMessageObserver() {
+  const message = document.querySelector('.message');
+  if (!message) return;
+
   const texts = document.querySelectorAll(
     '.message-text .m1, .message-text .m2, .message-text .m3'
   );

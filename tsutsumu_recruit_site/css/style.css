@@ -2557,14 +2557,22 @@ footer {
     margin-bottom: 20px;
   }
 
+  /* Team slider viewport */
+  .member-slider {
+    width: 100%;
+    overflow: visible;
+    position: relative;
+  }
+
   .member-list {
-    margin: 0;
     display: flex;
     flex-wrap: nowrap;
+    margin: 0;
     padding: 0;
     gap: 0;
     overflow: visible;
-    width: 100%;
+    width: auto;
+    will-change: transform;
   }
 
   .member-list > li {
@@ -2584,6 +2592,10 @@ footer {
     box-shadow: 0 4px 10px rgba(0,0,0,0.04);
     position: relative;
     justify-content: flex-start;
+  }
+
+  .member-list .card {
+    flex-shrink: 0;
   }
 
   /* photo area */
